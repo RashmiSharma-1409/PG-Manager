@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PG Manager | Tenants</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">PG MANAGER</div>
+        <div class="brand-subtitle">PROPERTY MANAGEMENT</div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <nav class="nav-links">
+
+            <a href="{{ url_for('home') }}">Dashboard</a>
+
+            <a href="{{ url_for('tenant_report') }}" class="active">
+                Tenants
+            </a>
+
+            <a href="{{ url_for('payments') }}">Payments</a>
+
+            <a href="{{ url_for('occupancy') }}">Occupancy</a>
+
+            <a href="{{ url_for('manage_rooms') }}">Floors & Rooms</a>
+
+            <a href="{{ url_for('add_tenant_page') }}">+ Add Tenant</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Tenant Management</h1>
+                <p class="page-subtitle">
+                    Manage current residents and view tenant history
+                </p>
+            </div>
+
+            <a href="{{ url_for('add_tenant_page') }}"
+               class="primary-button">
+                + Add Tenant
+            </a>
+        </div>
+
+
+        <!-- Current Tenants -->
+        <section class="section-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Current Tenants</h2>
+                    <p class="section-caption">
+                        Residents currently staying in your PG
+                    </p>
+                </div>
+
+                <span class="count-label">
+                    {{ active_results|length }} Active
+                </span>
+            </div>
+
+
+            {% if active_results %}
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Floor</th>
+                            <th>Room</th>
+                            <th>Bed</th>
+                            <th>Joining Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for tenant, bed, room, floor in active_results %}
+
+                        <tr>
+                            <td class="tenant-name">
+                                {{ tenant.name }}
+                            </td>
+
+                            <td>{{ tenant.phone }}</td>
+
+                            <td>{{ floor.floor_name }}</td>
+
+                            <td>{{ room.room_number }}</td>
+
+                            <td>{{ bed.bed_number }}</td>
+
+                            <td>{{ tenant.join_date }}</td>
+
+                            <td>
+                                <div class="action-buttons">
+
+                                    <a href="{{ url_for('edit_tenant', tenant_id=tenant.id) }}"
+                                       class="edit-button">
+                                        Edit
+                                    </a>
+
+                                    <form method="POST"
+                                          action="{{ url_for('checkout_tenant', tenant_id=tenant.id) }}"
+                                          onsubmit="return confirm('Are you sure this tenant is checking out?');">
+
+                                        <button type="submit"
+                                                class="checkout-button">
+                                            Check Out
+                                        </button>
+
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                No current tenants found.
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- Previous Tenants -->
+        <section class="section-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Previous Tenants</h2>
+                    <p class="section-caption">
+                        Historical records of tenants who checked out
+                    </p>
+                </div>
+
+                <span class="count-label previous-count">
+                    {{ previous_results|length }} Previous
+                </span>
+            </div>
+
+
+            {% if previous_results %}
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Floor</th>
+                            <th>Room</th>
+                            <th>Bed</th>
+                            <th>Joining Date</th>
+                            <th>Checkout Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for tenant, bed, room, floor in previous_results %}
+
+                        <tr>
+                            <td class="tenant-name">
+                                {{ tenant.name }}
+                            </td>
+
+                            <td>{{ tenant.phone }}</td>
+
+                            <td>{{ floor.floor_name }}</td>
+
+                            <td>{{ room.room_number }}</td>
+
+                            <td>{{ bed.bed_number }}</td>
+
+                            <td>{{ tenant.join_date }}</td>
+
+                            <td>{{ tenant.checkout_date }}</td>
+
+                            <td>
+                                <span class="status-label">
+                                    Checked Out
+                                </span>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                No previous tenant records found.
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

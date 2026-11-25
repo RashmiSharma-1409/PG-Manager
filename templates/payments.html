@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PG Manager | Payments</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">PG MANAGER</div>
+        <div class="brand-subtitle">PROPERTY MANAGEMENT</div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <nav class="nav-links">
+
+            <a href="{{ url_for('home') }}">Dashboard</a>
+
+            <a href="{{ url_for('tenant_report') }}">Tenants</a>
+
+            <a href="{{ url_for('payments') }}" class="active">
+                Payments
+            </a>
+
+            <a href="{{ url_for('occupancy') }}">Occupancy</a>
+
+            <a href="{{ url_for('manage_rooms') }}">Floors & Rooms</a>
+
+            <a href="{{ url_for('add_tenant_page') }}">+ Add Tenant</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Payment Management</h1>
+                <p class="page-subtitle">
+                    Track joining advances and monthly rent payments
+                </p>
+            </div>
+        </div>
+
+
+        <!-- Joining Advance -->
+        <section class="section-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Joining Advance</h2>
+                    <p class="section-caption">
+                        One-time joining collection for every tenant
+                    </p>
+                </div>
+
+                <div class="payment-total">
+                    ₹3,000
+                    <span>Total Advance</span>
+                </div>
+            </div>
+
+            <div class="advance-breakdown">
+
+                <div class="advance-item">
+                    <span>Refundable Security</span>
+                    <strong>₹1,500</strong>
+                </div>
+
+                <div class="advance-item">
+                    <span>Maintenance Charge</span>
+                    <strong>₹1,500</strong>
+                </div>
+
+            </div>
+
+
+            {% if joining_charges %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>Total Amount</th>
+                            <th>Refundable</th>
+                            <th>Maintenance</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for charge, tenant in joining_charges %}
+
+                        <tr>
+                            <td class="tenant-name">
+                                {{ tenant.name }}
+                            </td>
+
+                            <td>₹{{ charge.total_amount }}</td>
+
+                            <td>₹{{ charge.refundable_amount }}</td>
+
+                            <td>₹{{ charge.maintenance_amount }}</td>
+
+                            <td>
+                                {% if charge.paid %}
+                                    <span class="payment-status paid">
+                                        Paid
+                                    </span>
+                                {% else %}
+                                    <span class="payment-status due">
+                                        Due
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <form method="POST" class="payment-actions">
+
+                                    <input type="hidden"
+                                           name="payment_type"
+                                           value="joining">
+
+                                    <input type="hidden"
+                                           name="record_id"
+                                           value="{{ charge.id }}">
+
+                                    <button name="action"
+                                            value="paid"
+                                            class="mark-paid">
+                                        Mark Paid
+                                    </button>
+
+                                    <button name="action"
+                                            value="due"
+                                            class="mark-due">
+                                        Mark Due
+                                    </button>
+
+                                </form>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                No joining advance records found.
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- Monthly Rent -->
+        <section class="section-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Monthly Rent</h2>
+                    <p class="section-caption">
+                        Monthly rent records and payment tracking
+                    </p>
+                </div>
+            </div>
+
+
+            {% if rent_records %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>Billing Month</th>
+                            <th>Rent</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for fee, tenant in rent_records %}
+
+                        <tr>
+                            <td class="tenant-name">
+                                {{ tenant.name }}
+                            </td>
+
+                            <td>{{ fee.billing_month }}</td>
+
+                            <td class="amount-due">
+                                ₹{{ fee.amount_due }}
+                            </td>
+
+                            <td>{{ fee.due_date }}</td>
+
+                            <td>
+                                {% if fee.amount_paid >= fee.amount_due %}
+                                    <span class="payment-status paid">
+                                        Paid
+                                    </span>
+                                {% else %}
+                                    <span class="payment-status due">
+                                        Due
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <form method="POST" class="payment-actions">
+
+                                    <input type="hidden"
+                                           name="payment_type"
+                                           value="rent">
+
+                                    <input type="hidden"
+                                           name="record_id"
+                                           value="{{ fee.id }}">
+
+                                    <button name="action"
+                                            value="paid"
+                                            class="mark-paid">
+                                        Mark Paid
+                                    </button>
+
+                                    <button name="action"
+                                            value="due"
+                                            class="mark-due">
+                                        Mark Due
+                                    </button>
+
+                                </form>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                No monthly rent records found.
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

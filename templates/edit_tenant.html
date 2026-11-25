@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Tenant - PG Manager</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            PG MANAGER
+            <span class="brand-subtitle">PROPERTY MANAGEMENT</span>
+        </div>
+
+        <p class="nav-heading">MAIN MENU</p>
+
+        <nav class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/tenants" class="active">Tenants</a>
+            <a href="/payments">Payments</a>
+            <a href="/occupancy">Occupancy</a>
+            <a href="/manage-rooms">Floors & Rooms</a>
+            <a href="/add-tenant">Add Tenant</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Edit Tenant</h1>
+                <p class="page-subtitle">
+                    Update the registered tenant's information
+                </p>
+            </div>
+        </div>
+
+        <section class="section-panel add-tenant-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Tenant Information</h2>
+                    <p class="section-caption">
+                        Make the necessary changes below
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" class="management-form tenant-form">
+
+                <div class="form-field">
+                    <label for="name">Tenant Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value="{{ tenant.name }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="phone">Phone Number</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value="{{ tenant.phone }}"
+                        required
+                    >
+                </div>
+
+                <div class="tenant-form-actions">
+                    <button type="submit" class="form-submit">
+                        Update Tenant
+                    </button>
+
+                    <a href="/tenants" class="cancel-button">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

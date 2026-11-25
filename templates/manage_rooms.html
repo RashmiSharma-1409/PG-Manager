@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PG Manager | Floors & Rooms</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">PG MANAGER</div>
+        <div class="brand-subtitle">PROPERTY MANAGEMENT</div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('home') }}">Dashboard</a>
+            <a href="{{ url_for('tenant_report') }}">Tenants</a>
+            <a href="{{ url_for('payments') }}">Payments</a>
+            <a href="{{ url_for('occupancy') }}">Occupancy</a>
+            <a href="{{ url_for('manage_rooms') }}" class="active">
+                Floors & Rooms
+            </a>
+            <a href="{{ url_for('add_tenant_page') }}">+ Add Tenant</a>
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Floor & Room Management</h1>
+                <p class="page-subtitle">
+                    Organize floors, rooms and bed capacity
+                </p>
+            </div>
+        </div>
+
+
+        <!-- Flash Message -->
+        {% if message %}
+        <div class="management-message">
+            {{ message }}
+        </div>
+        {% endif %}
+
+
+        <!-- Add Floor and Add Room -->
+        <div class="management-grid">
+
+            <!-- Add Floor -->
+            <section class="section-panel management-panel">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Add New Floor</h2>
+                        <p class="section-caption">
+                            Create a floor in your property
+                        </p>
+                    </div>
+                </div>
+
+                <form method="POST" class="management-form">
+
+                    <input type="hidden"
+                           name="action"
+                           value="add_floor">
+
+                    <label>Floor Name</label>
+
+                    <input type="text"
+                           name="floor_name"
+                           placeholder="Example: First Floor"
+                           required>
+
+                    <button type="submit" class="form-submit">
+                        + Add Floor
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <!-- Add Room -->
+            <section class="section-panel management-panel">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Add New Room</h2>
+                        <p class="section-caption">
+                            Add a room and automatically create its beds
+                        </p>
+                    </div>
+                </div>
+
+                <form method="POST" class="management-form">
+
+                    <input type="hidden"
+                           name="action"
+                           value="add_room">
+
+                    <label>Room Number</label>
+
+                    <input type="text"
+                           name="room_number"
+                           placeholder="Example: G02"
+                           required>
+
+                    <label>Select Floor</label>
+
+                    <select name="floor_id" required>
+                        <option value="">Choose Floor</option>
+
+                        {% for floor in floors %}
+                        <option value="{{ floor.id }}">
+                            {{ floor.floor_name }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                    <label>Sharing Capacity</label>
+
+                    <select name="capacity" required>
+                        <option value="2">2 Sharing</option>
+                        <option value="3">3 Sharing</option>
+                        <option value="4">4 Sharing</option>
+                    </select>
+
+                    <button type="submit" class="form-submit">
+                        + Add Room & Create Beds
+                    </button>
+
+                </form>
+
+            </section>
+
+        </div>
+
+
+        <!-- Existing Rooms -->
+        <section class="section-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Existing Rooms</h2>
+                    <p class="section-caption">
+                        View and manage all rooms and their bed capacity
+                    </p>
+                </div>
+
+                <span class="count-label">
+                    {{ room_rows|length }} Rooms
+                </span>
+            </div>
+
+
+            {% if room_rows %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Floor</th>
+                            <th>Room</th>
+                            <th>Sharing</th>
+                            <th>Beds Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in room_rows %}
+
+                        <tr>
+                            <td>{{ item.floor.floor_name }}</td>
+
+                            <td class="tenant-name">
+                                {{ item.room.room_number }}
+                            </td>
+
+                            <td>
+                                <span class="sharing-label">
+                                    {{ item.room.sharing_capacity }} Sharing
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="bed-capacity">
+                                    <strong>{{ item.bed_count }}</strong>
+                                    <span>
+                                        / {{ item.room.sharing_capacity }} beds
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td>
+
+                                <div class="room-actions">
+
+                                    <form method="POST">
+                                        <input type="hidden"
+                                               name="action"
+                                               value="add_beds">
+
+                                        <input type="hidden"
+                                               name="room_id"
+                                               value="{{ item.room.id }}">
+
+                                        <button type="submit"
+                                                class="add-beds-button">
+                                            Create Missing Beds
+                                        </button>
+                                    </form>
+
+
+                                    <form method="POST"
+                                          action="{{ url_for('delete_room', room_id=item.room.id) }}"
+                                          onsubmit="return confirm('Are you sure you want to delete this room and its beds?');">
+
+                                        <button type="submit"
+                                                class="delete-room-button">
+                                            Delete Room
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                No rooms have been added yet. Start by creating a floor and room.
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

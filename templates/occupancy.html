@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PG Manager | Occupancy</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">PG MANAGER</div>
+        <div class="brand-subtitle">PROPERTY MANAGEMENT</div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('home') }}">Dashboard</a>
+            <a href="{{ url_for('tenant_report') }}">Tenants</a>
+            <a href="{{ url_for('payments') }}">Payments</a>
+            <a href="{{ url_for('occupancy') }}" class="active">Occupancy</a>
+            <a href="{{ url_for('manage_rooms') }}">Floors & Rooms</a>
+            <a href="{{ url_for('add_tenant_page') }}">+ Add Tenant</a>
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Occupancy Overview</h1>
+                <p class="page-subtitle">
+                    Floor-wise and room-wise bed availability
+                </p>
+            </div>
+        </div>
+
+
+        {% for item in report %}
+
+        <section class="section-panel floor-section">
+
+            <div class="floor-heading">
+                <div>
+                    <span class="floor-label">FLOOR</span>
+                    <h2>{{ item.floor.floor_name }}</h2>
+                </div>
+
+                <span class="room-count">
+                    {{ item.rooms|length }} Rooms
+                </span>
+            </div>
+
+
+            <div class="room-grid">
+
+                {% for room_item in item.rooms %}
+
+                <div class="room-card">
+
+                    <div class="room-card-header">
+                        <div>
+                            <span class="room-label">ROOM</span>
+                            <h3>{{ room_item.room.room_number }}</h3>
+                        </div>
+
+                        <span class="sharing-label">
+                            {{ room_item.room.sharing_capacity }} Sharing
+                        </span>
+                    </div>
+
+
+                    <div class="occupancy-counts">
+
+                        <div class="occupancy-count occupied-count">
+                            <span>Occupied</span>
+                            <strong>{{ room_item.occupied }}</strong>
+                        </div>
+
+                        <div class="occupancy-count vacant-count">
+                            <span>Vacant</span>
+                            <strong>{{ room_item.vacant }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="bed-list">
+
+                        <div class="bed-list-heading">
+                            BED DETAILS
+                        </div>
+
+                        {% for bed_item in room_item.beds %}
+
+                        <div class="bed-row">
+
+                            <div class="bed-info">
+                                <strong>{{ bed_item.bed.bed_number }}</strong>
+
+                                {% if bed_item.tenant %}
+                                    <span>{{ bed_item.tenant.name }}</span>
+                                {% else %}
+                                    <span class="vacant-text">Available</span>
+                                {% endif %}
+                            </div>
+
+                            {% if bed_item.tenant %}
+                                <span class="bed-status occupied-status">
+                                    Occupied
+                                </span>
+                            {% else %}
+                                <span class="bed-status vacant-status">
+                                    Vacant
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% else %}
+
+        <section class="section-panel">
+            <div class="empty-state">
+                No floors or rooms have been added yet.
+            </div>
+        </section>
+
+        {% endfor %}
+
+    </main>
+
+</div>
+
+</body>
+</html>

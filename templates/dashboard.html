@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PG Manager | Dashboard</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">PG MANAGER</div>
+        <div class="brand-subtitle">PROPERTY MANAGEMENT</div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <nav class="nav-links">
+
+            <a href="{{ url_for('home') }}" class="active">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('tenant_report') }}">
+                Tenants
+            </a>
+
+            <a href="{{ url_for('payments') }}">
+                Payments
+            </a>
+
+            <a href="{{ url_for('occupancy') }}">
+                Occupancy
+            </a>
+
+            <a href="{{ url_for('manage_rooms') }}">
+                Floors & Rooms
+            </a>
+
+            <a href="{{ url_for('add_tenant_page') }}">
+                + Add Tenant
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Dashboard -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">
+                    Overview of your PG operations
+                </p>
+            </div>
+        </div>
+
+
+        <!-- Summary Cards -->
+        <div class="dashboard-cards">
+
+            <div class="card">
+                <h3>Total Tenants</h3>
+                <h2>{{ total_tenants }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Total Rooms</h3>
+                <h2>{{ total_rooms }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Total Beds</h3>
+                <h2>{{ total_beds }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Occupied Beds</h3>
+                <h2>{{ occupied_beds }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Vacant Beds</h3>
+                <h2>{{ vacant_beds }}</h2>
+            </div>
+
+            <div class="card pending-card">
+                <h3>Pending Rent</h3>
+                <h2>₹{{ "%.2f"|format(pending_amount) }}</h2>
+            </div>
+
+        </div>
+
+
+        <!-- Monthly Rent Reminders -->
+        <section class="section-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Monthly Rent Reminders</h2>
+                    <p class="section-caption">
+                        Tenants with outstanding rent payments
+                    </p>
+                </div>
+            </div>
+
+
+            {% if pending_fees %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tenant Name</th>
+                            <th>Phone</th>
+                            <th>Rent Due</th>
+                            <th>Due Date</th>
+                            <th>Amount Paid</th>
+                            <th>Remaining</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for fee, tenant in pending_fees %}
+
+                        <tr>
+                            <td>{{ tenant.name }}</td>
+
+                            <td>{{ tenant.phone }}</td>
+
+                            <td class="amount-due">
+                                ₹{{ fee.amount_due }}
+                            </td>
+
+                            <td>{{ fee.due_date }}</td>
+
+                            <td>₹{{ fee.amount_paid }}</td>
+
+                            <td class="remaining-amount">
+                                ₹{{ fee.amount_due - fee.amount_paid }}
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+                No pending rent reminders today!
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

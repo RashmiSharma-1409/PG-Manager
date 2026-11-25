@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PG Manager - Add Tenant</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            PG MANAGER
+            <span class="brand-subtitle">PROPERTY MANAGEMENT</span>
+        </div>
+
+        <p class="nav-heading">MAIN MENU</p>
+
+        <nav class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/tenants">Tenants</a>
+            <a href="/payments">Payments</a>
+            <a href="/occupancy">Occupancy</a>
+            <a href="/manage-rooms">Floors & Rooms</a>
+            <a href="/add-tenant" class="active">Add Tenant</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">Add New Tenant</h1>
+                <p class="page-subtitle">
+                    Register a tenant and assign an available bed
+                </p>
+            </div>
+        </div>
+
+        <section class="section-panel add-tenant-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Tenant Information</h2>
+                    <p class="section-caption">
+                        Enter the details below to register a new tenant
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" action="/add-tenant"
+                  class="management-form tenant-form">
+
+                <div class="form-field">
+                    <label for="name">Tenant Name</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           placeholder="Enter tenant name"
+                           required>
+                </div>
+
+                <div class="form-field">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel"
+                           id="phone"
+                           name="phone"
+                           placeholder="Enter phone number"
+                           required>
+                </div>
+
+                <div class="form-field">
+                    <label for="join_date">Joining Date</label>
+                    <input type="date"
+                           id="join_date"
+                           name="join_date"
+                           required>
+                </div>
+
+                <div class="form-field">
+                    <label for="bed_id">Available Bed</label>
+
+                    <select id="bed_id" name="bed_id" required>
+                        <option value="">Choose an available bed</option>
+
+                        {% for bed in beds %}
+                            <option value="{{ bed.id }}">
+                                {{ bed.bed_number }} - Room ID: {{ bed.room_id }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="tenant-form-actions">
+                    <button type="submit" class="form-submit">
+                        Add Tenant
+                    </button>
+
+                    <a href="/tenants" class="cancel-button">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
